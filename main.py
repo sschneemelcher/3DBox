@@ -16,9 +16,9 @@ def get_fps(fps, start):
 
 def next_step(b, r, f):
 	b = rotate(b-offset, r[0]*deg, r[1]*deg, r[2]*deg)+offset
+#	v = rotate(v, r[0]*deg, r[1]*deg, r[2]*deg)
 	r = r*0.99 + np.random.normal(0, sigma, 3)*0.01
 	f += 1
-	eel.sleep(0.0001)
 	return b, r, f, []
 
 deg = np.pi/1024
@@ -27,8 +27,13 @@ scale = 125
 box = np.array([[-1, -1, -1, -1, 1, 1, 1, 1],
 		[-1, -1, 1, 1, -1, -1, 1, 1],
 		[-1, 1, -1, 1, -1, 1, -1, 1]])*scale+offset
-connections = [0,1,0,2,0,4,1,3,1,5,2,3,2,6,3,7,4,5,4,6,5,7,6,7]
-sigma = 5
+connections = np.array([0,1,0,2,0,4,1,3,1,5,2,3,2,6,3,7,4,5,4,6,5,7,6,7])
+
+v = np.zeros((3,24))
+for c in range(len(connections)//2):
+	v[:,c*2:c*2+2] = box[:, connections[c*2:c*2+2]] # building the lines
+
+sigma = 10
 r = np.random.normal(0, sigma, 3)
 fps = 0
 start = datetime.datetime.now()
@@ -40,7 +45,7 @@ eel.start('index.html', size=(620,620), block=False)
 while True:
 	if (datetime.datetime.now() - start).seconds:
 		fps, start = get_fps(fps, start)
-	for c in range(len(connections)//2):
-		coordinates.append([int(x) for x in list(box[0:2,connections[2*c:2*c+2]].T.flatten())])
+	coordinates = v[:2].T.reshape(12,4).tolist() 
+	eel.sleep(0.000001)#0.007)
 	eel.drawLines(coordinates)
-	box, r, fps, coordinates = next_step(box, r, fps)
+	v, r, fps, coordinates = next_step(v, r, fps)

@@ -2,7 +2,7 @@ function drawLines(coordinates) {
 	var c = document.getElementById("myCanvas");
 	var ctx = c.getContext("2d");
 	ctx.strokeStyle = "green";
-	ctx.lineWidth = 2;
+	ctx.lineWidth = 5;
 	ctx.beginPath();
 	ctx.clearRect(0, 0, c.width, c.height);
 	coordinates.forEach(function(current) {
